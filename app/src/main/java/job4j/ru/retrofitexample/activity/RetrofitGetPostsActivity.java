@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import job4j.ru.retrofitexample.R;
 import job4j.ru.retrofitexample.model.Post;
-import job4j.ru.retrofitexample.service.JsonPlaceHolderApi;
+import job4j.ru.retrofitexample.network.JsonPlaceHolderApi;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

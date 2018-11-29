@@ -1,4 +1,4 @@
-package job4j.ru.retrofitexample.service;
+package job4j.ru.retrofitexample.network;
 
 import java.util.List;
 import java.util.Map;
@@ -25,8 +25,5 @@ public interface JsonPlaceHolderApi {
 
     @GET("posts")
     Call<Post> getQueryMapPost(@QueryMap Map<String, String> parameters);
-
-    @GET("comments")
-    Call<List<Comment>> getComments();
 
 }
