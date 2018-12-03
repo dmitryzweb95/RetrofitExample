@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import job4j.ru.retrofitexample.R;
@@ -26,7 +25,7 @@ import retrofit2.Response;
  * @author dmitryzweb
  * @since 26/11/2018
  */
-public class MainActivity extends AppCompatActivity {
+public class CommentActivity extends AppCompatActivity {
 
     private CommentAdapter adapter;
     private RecyclerView recyclerView;
@@ -53,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Comment>> call, Throwable t) {
-                Toast.makeText(MainActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(CommentActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -68,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new CommentAdapter(comDataList);
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(MainActivity.this);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(CommentActivity.this);
 
         recyclerView.setLayoutManager(layoutManager);
 

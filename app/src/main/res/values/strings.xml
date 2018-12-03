@@ -3,4 +3,11 @@
     <string name="name">name</string>
     <string name="email">email</string>
     <string name="text">text</string>
+    <string name="create">Create</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="id">id</string>
+    <string name="userId">userID</string>
+    <string name="textTitle">title</string>
+    <string name="textText">text</string>
 </resources>

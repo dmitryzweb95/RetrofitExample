@@ -6,6 +6,12 @@ import job4j.ru.retrofitexample.model.Comment;
 import retrofit2.Call;
 import retrofit2.http.GET;
 
+/**
+ * TODO: comment
+ *
+ * @author dmitryzweb
+ * @since 26/11/2018
+ */
 public interface GetCommentDataService {
     @GET("comments")
     Call<List<Comment>> getCommentData();
