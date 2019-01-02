@@ -1,5 +1,6 @@
 package job4j.ru.retrofitexample.adapter;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,38 +23,55 @@ public class CommentAdapter extends RecyclerView.Adapter<CommentAdapter.CommentV
 
     private List<Comment> dataList;
 
-    public CommentAdapter(List<Comment> dataList) {
-        this.dataList = dataList;
-    }
-
+    @NonNull
     @Override
-    public CommentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CommentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
         View view = layoutInflater.inflate(R.layout.info_comment, parent, false);
         return new CommentViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(CommentViewHolder holder, int position) {
-        holder.txtComName.setText(dataList.get(position).getName());
-        holder.txtComEmail.setText(dataList.get(position).getEmail());
-        holder.txtComBody.setText(dataList.get(position).getText());
+    public void onBindViewHolder(@NonNull CommentViewHolder holder, int position) {
+        holder.bind(dataList.get(position));
     }
+
 
     @Override
     public int getItemCount() {
         return dataList.size();
     }
 
+    /**
+     * Method that set data
+     *
+     * @param dataList
+     */
+    public void setItems(List<Comment> dataList) {
+        this.dataList = dataList;
+        notifyDataSetChanged();
+    }
+
     class CommentViewHolder extends RecyclerView.ViewHolder {
 
-        TextView txtComName, txtComEmail, txtComBody;
+        TextView name, email, body;
 
         CommentViewHolder(View itemView) {
             super(itemView);
-            txtComName = (TextView) itemView.findViewById(R.id.txt_comment_name);
-            txtComEmail = (TextView) itemView.findViewById(R.id.txt_comment_email);
-            txtComBody = (TextView) itemView.findViewById(R.id.txt_comment_text);
+            name = itemView.findViewById(R.id.txt_comment_name);
+            email = itemView.findViewById(R.id.txt_comment_email);
+            body = itemView.findViewById(R.id.txt_comment_text);
+        }
+
+        /**
+         * Method bind binding view and data from exam
+         *
+         * @param comment
+         */
+        private void bind(Comment comment) {
+            name.setText(comment.getName());
+            email.setText(comment.getEmail());
+            body.setText(comment.getText());
         }
     }
 }

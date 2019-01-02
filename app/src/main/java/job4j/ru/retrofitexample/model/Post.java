@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
  * @since 26/11/2018
  */
 public class Post {
-    private Integer userId;
+    private int userId;
     private Integer id;
     private String title;
 

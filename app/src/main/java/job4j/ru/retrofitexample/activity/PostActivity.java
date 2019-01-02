@@ -93,13 +93,12 @@ public class PostActivity extends AppCompatActivity {
             String userIdValue = userId.getText().toString();
             int finalUserIdValue = Integer.parseInt(userIdValue);
 
-            Post post = new Post(finalUserIdValue, title.getText().toString(), text.getText().toString());
                     /*
         Realization of interface JsonPlaceHolderApi
          */
             GetPostDataService postDataService = retrofit.create(GetPostDataService.class);
 
-            Call<Post> call = postDataService.createPost(post);
+            Call<Post> call = postDataService.createPost(finalUserIdValue, title.getText().toString(), text.getText().toString());
             call.enqueue(new Callback<Post>() {
                 @Override
                 public void onResponse(Call<Post> call, Response<Post> response) {
@@ -140,13 +139,12 @@ public class PostActivity extends AppCompatActivity {
             String idValue = id.getText().toString();
             int finalId = Integer.parseInt(idValue);
 
-            Post post = new Post(finalUserIdValue, title.getText().toString(), text.getText().toString());
                     /*
         Realization of interface JsonPlaceHolderApi
          */
             GetPostDataService postDataService = retrofit.create(GetPostDataService.class);
 
-            Call<Post> call = postDataService.patchPost(finalId, post);
+            Call<Post> call = postDataService.patchPost(finalId, new Post(finalUserIdValue, title.getText().toString(), text.getText().toString()));
             call.enqueue(new Callback<Post>() {
                 @Override
                 public void onResponse(Call<Post> call, Response<Post> response) {

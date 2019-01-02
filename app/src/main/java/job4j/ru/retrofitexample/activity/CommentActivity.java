@@ -58,14 +58,23 @@ public class CommentActivity extends AppCompatActivity {
     }
 
     /**
+     * Method that initialises recycler
+     */
+    private void initRecyclerView() {
+        recyclerView = findViewById(R.id.recycler_view_comment_list);
+    }
+
+    /**
      * Method to generate List of Comments using RecyclerView with custom adapter
      *
      * @param comDataList list of comments
      */
     private void generateCommentList(List<Comment> comDataList) {
-        recyclerView = (RecyclerView) findViewById(R.id.recycler_view_comment_list);
+        initRecyclerView();
 
-        adapter = new CommentAdapter(comDataList);
+        adapter = new CommentAdapter();
+
+        adapter.setItems(comDataList);
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(CommentActivity.this);
 
