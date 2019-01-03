@@ -32,12 +32,195 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * @since 26/11/2018
  */
 public class PostActivity extends AppCompatActivity {
+    //Buttons
+    private Button create;
+    private Button edit;
+    private Button delete;
+
+    //EditTexts
+    private EditText id;
+    private EditText userId;
+    private EditText title;
+    private EditText text;
+
+    //TextViews
+    private TextView result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.post_activity);
 
+        //Buttons
+        create = findViewById(R.id.create);
+        edit = findViewById(R.id.edit);
+        delete = findViewById(R.id.delete);
+
+        //EditText
+        id = findViewById(R.id.editId);
+        userId = findViewById(R.id.editUserId);
+        title = findViewById(R.id.editTitle);
+        text = findViewById(R.id.editText);
+
+        //Main text
+        result = findViewById(R.id.result);
+
+        //Create resource (POST)
+        create.setOnClickListener(v -> {
+            this.create();
+        });
+
+        //Resource editing (PATCH)
+        edit.setOnClickListener(v -> {
+            this.edit();
+        });
+
+        //Resource deleting (DELETE)
+        delete.setOnClickListener(v -> {
+            this.delete();
+        });
+
+    }
+
+    /**
+     * Create post
+     */
+    private void create() {
+        //Converting id
+        String userIdValue = userId.getText().toString();
+        if (userIdValue.equals("")) {
+            Toast.makeText(getApplicationContext(), "Not enough data", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int finalUserIdValue = Integer.parseInt(userIdValue);
+
+                    /*
+        Realization of interface JsonPlaceHolderApi
+         */
+        GetPostDataService postDataService = getRetrofitSettings().create(GetPostDataService.class);
+
+        Call<Post> call = postDataService.createPost(finalUserIdValue, title.getText().toString(), text.getText().toString());
+        call.enqueue(new Callback<Post>() {
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                if (response.isSuccessful()) {
+                    Post postResponse = response.body();
+                    String content = String.format(
+                            "ID: %s \n user ID: %s \n Title: %s \n Text: %s \n\n",
+                            postResponse.getId(), postResponse.getUserId(),
+                            postResponse.getTitle(), postResponse.getText()
+                    );
+                    result.setText(content);
+                } else {
+                    Toast.makeText(PostActivity.this, String.format("Error, response status: %s", response.code()),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+                if (t instanceof IOException) {
+                    Toast.makeText(PostActivity.this, "Connecting Error",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(PostActivity.this, "Conversion Error",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    /**
+     * Edit post
+     */
+    private void edit() {
+        //Converting userId
+        String userIdValue = userId.getText().toString();
+        if (userIdValue.equals("")) {
+            Toast.makeText(getApplicationContext(), "Not enough data", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int finalUserIdValue = Integer.parseInt(userIdValue);
+
+        //Converting ID
+        String idValue = id.getText().toString();
+        int finalId = Integer.parseInt(idValue);
+
+                    /*
+        Realization of interface JsonPlaceHolderApi
+         */
+        GetPostDataService postDataService = getRetrofitSettings().create(GetPostDataService.class);
+
+        Call<Post> call = postDataService.patchPost(finalId, new Post(finalUserIdValue, title.getText().toString(), text.getText().toString()));
+        call.enqueue(new Callback<Post>() {
+            @Override
+            public void onResponse(Call<Post> call, Response<Post> response) {
+                if (response.isSuccessful()) {
+                    Post postResponse = response.body();
+                    String content = String.format(
+                            "ID: %s \n user ID: %s \n Title: %s \n Text: %s \n\n",
+                            postResponse.getId(), postResponse.getUserId(),
+                            postResponse.getTitle(), postResponse.getText()
+                    );
+                    result.setText(content);
+                } else {
+                    Toast.makeText(PostActivity.this, String.format("Error, response status: %s", response.code()),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Post> call, Throwable t) {
+                if (t instanceof IOException) {
+                    Toast.makeText(PostActivity.this, "Connecting Error %s",
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(PostActivity.this, "Conversion Error %s",
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    /**
+     * Delete post
+     */
+    private void delete() {
+        //Converting ID
+        String idValue = id.getText().toString();
+        if (idValue.equals("")) {
+            Toast.makeText(getApplicationContext(), "Not enough data", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        int finalId = Integer.parseInt(idValue);
+                    /*
+        Realization of interface JsonPlaceHolderApi
+         */
+        GetPostDataService postDataService = getRetrofitSettings().create(GetPostDataService.class);
+
+        Call<Void> call = postDataService.deletePost(finalId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    result.setText(String.valueOf(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                t.getMessage();
+            }
+        });
+    }
+
+
+    /**
+     * Method that takes retrofit settings with interceptor
+     *
+     * @return retrofit
+     */
+    private Retrofit getRetrofitSettings() {
         //Interceptor
         OkHttpClient clientErrorIntercept = new OkHttpClient.Builder()
                 .addInterceptor(chain -> {
@@ -66,140 +249,11 @@ public class PostActivity extends AppCompatActivity {
         }
         client.addInterceptor(interceptor);
 
-        Retrofit retrofit = new Retrofit.Builder()
+        return new Retrofit.Builder()
                 .baseUrl("https://jsonplaceholder.typicode.com/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(client.build())
                 .client(clientErrorIntercept)//interceptor
                 .build();
-
-        //Buttons
-        Button create = findViewById(R.id.create);
-        Button edit = findViewById(R.id.edit);
-        Button delete = findViewById(R.id.delete);
-
-        //EditText
-        EditText id = findViewById(R.id.editId);
-        EditText userId = findViewById(R.id.editUserId);
-        EditText title = findViewById(R.id.editTitle);
-        EditText text = findViewById(R.id.editText);
-
-        //Main text
-        TextView result = findViewById(R.id.result);
-
-        //Create resource (POST)
-        create.setOnClickListener(v -> {
-            //Converting id
-            String userIdValue = userId.getText().toString();
-            int finalUserIdValue = Integer.parseInt(userIdValue);
-
-                    /*
-        Realization of interface JsonPlaceHolderApi
-         */
-            GetPostDataService postDataService = retrofit.create(GetPostDataService.class);
-
-            Call<Post> call = postDataService.createPost(finalUserIdValue, title.getText().toString(), text.getText().toString());
-            call.enqueue(new Callback<Post>() {
-                @Override
-                public void onResponse(Call<Post> call, Response<Post> response) {
-                    if (response.isSuccessful()) {
-                        Post postResponse = response.body();
-                        String content = String.format(
-                                "ID: %s \n user ID: %s \n Title: %s \n Text: %s \n\n",
-                                postResponse.getId(), postResponse.getUserId(),
-                                postResponse.getTitle(), postResponse.getText()
-                        );
-                        result.setText(content);
-                    } else {
-                        Toast.makeText(PostActivity.this, String.format("Error, response status: %s", response.code()),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Post> call, Throwable t) {
-                    if (t instanceof IOException) {
-                        Toast.makeText(PostActivity.this, "Connecting Error",
-                                Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(PostActivity.this, "Conversion Error",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        });
-
-        //Resource editing (PATCH)
-        edit.setOnClickListener(v -> {
-            //Converting userId
-            String userIdValue = userId.getText().toString();
-            int finalUserIdValue = Integer.parseInt(userIdValue);
-
-            //Converting ID
-            String idValue = id.getText().toString();
-            int finalId = Integer.parseInt(idValue);
-
-                    /*
-        Realization of interface JsonPlaceHolderApi
-         */
-            GetPostDataService postDataService = retrofit.create(GetPostDataService.class);
-
-            Call<Post> call = postDataService.patchPost(finalId, new Post(finalUserIdValue, title.getText().toString(), text.getText().toString()));
-            call.enqueue(new Callback<Post>() {
-                @Override
-                public void onResponse(Call<Post> call, Response<Post> response) {
-                    if (response.isSuccessful()) {
-                        Post postResponse = response.body();
-                        String content = String.format(
-                                "ID: %s \n user ID: %s \n Title: %s \n Text: %s \n\n",
-                                postResponse.getId(), postResponse.getUserId(),
-                                postResponse.getTitle(), postResponse.getText()
-                        );
-                        result.setText(content);
-                    } else {
-                        Toast.makeText(PostActivity.this, String.format("Error, response status: %s", response.code()),
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Post> call, Throwable t) {
-                    if (t instanceof IOException) {
-                        Toast.makeText(PostActivity.this, "Connecting Error %s",
-                                Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(PostActivity.this, "Conversion Error %s",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        });
-
-        delete.setOnClickListener(v -> {
-
-            //Converting ID
-            String idValue = id.getText().toString();
-            int finalId = Integer.parseInt(idValue);
-                    /*
-        Realization of interface JsonPlaceHolderApi
-         */
-            GetPostDataService postDataService = retrofit.create(GetPostDataService.class);
-
-            Call<Void> call = postDataService.deletePost(finalId);
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        result.setText(String.valueOf(response.code()));
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    t.getMessage();
-                }
-            });
-        });
-
     }
 }
