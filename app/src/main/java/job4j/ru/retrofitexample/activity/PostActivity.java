@@ -3,7 +3,6 @@ package job4j.ru.retrofitexample.activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -15,7 +14,6 @@ import job4j.ru.retrofitexample.BuildConfig;
 import job4j.ru.retrofitexample.R;
 import job4j.ru.retrofitexample.model.Post;
 import job4j.ru.retrofitexample.network.GetPostDataService;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -45,6 +43,19 @@ public class PostActivity extends AppCompatActivity {
 
     //TextViews
     private TextView result;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        create = null;
+        edit = null;
+        delete = null;
+        id = null;
+        userId = null;
+        title = null;
+        text = null;
+        result = null;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +99,8 @@ public class PostActivity extends AppCompatActivity {
     private void create() {
         //Converting id
         String userIdValue = userId.getText().toString();
-        if (userIdValue.equals("")) {
-            Toast.makeText(getApplicationContext(), "Not enough data", Toast.LENGTH_SHORT).show();
+        if (userIdValue.isEmpty()) {
+            Toast.makeText(this, "Not enough data", Toast.LENGTH_SHORT).show();
             return;
         }
         int finalUserIdValue = Integer.parseInt(userIdValue);
@@ -136,8 +147,8 @@ public class PostActivity extends AppCompatActivity {
     private void edit() {
         //Converting userId
         String userIdValue = userId.getText().toString();
-        if (userIdValue.equals("")) {
-            Toast.makeText(getApplicationContext(), "Not enough data", Toast.LENGTH_SHORT).show();
+        if (userIdValue.isEmpty()) {
+            Toast.makeText(this, "Not enough data", Toast.LENGTH_SHORT).show();
             return;
         }
         int finalUserIdValue = Integer.parseInt(userIdValue);
@@ -188,9 +199,13 @@ public class PostActivity extends AppCompatActivity {
     private void delete() {
         //Converting ID
         String idValue = id.getText().toString();
-        if (idValue.equals("")) {
-            Toast.makeText(getApplicationContext(), "Not enough data", Toast.LENGTH_SHORT).show();
-            return;
+        try {
+            if (idValue.isEmpty()) {
+                Toast.makeText(this, "Not enough data", Toast.LENGTH_SHORT).show();
+                return;
+            }
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
         }
         int finalId = Integer.parseInt(idValue);
                     /*
