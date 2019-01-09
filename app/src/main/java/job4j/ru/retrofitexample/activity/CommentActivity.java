@@ -30,6 +30,16 @@ public class CommentActivity extends AppCompatActivity {
     private CommentAdapter adapter;
     private RecyclerView recyclerView;
 
+    /**
+     * Called before the operation is destroyed
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        adapter = null;
+        recyclerView = null;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +72,9 @@ public class CommentActivity extends AppCompatActivity {
      */
     private void initRecyclerView() {
         recyclerView = findViewById(R.id.recycler_view_comment_list);
+        recyclerView.setLayoutManager(new LinearLayoutManager(CommentActivity.this));
+        adapter = new CommentAdapter();
+        recyclerView.setAdapter(adapter);
     }
 
     /**
@@ -71,15 +84,6 @@ public class CommentActivity extends AppCompatActivity {
      */
     private void generateCommentList(List<Comment> comDataList) {
         initRecyclerView();
-
-        adapter = new CommentAdapter();
-
         adapter.setItems(comDataList);
-
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(CommentActivity.this);
-
-        recyclerView.setLayoutManager(layoutManager);
-
-        recyclerView.setAdapter(adapter);
     }
 }
