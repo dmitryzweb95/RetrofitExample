@@ -36,6 +36,8 @@ public class CommentActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.comments);
 
+        initRecyclerView();
+
         /*Create handle for the Retrofit interface*/
         GetCommentDataService service = RetrofitInstance.getRetrofitInstance().create(GetCommentDataService.class);
 
@@ -48,7 +50,6 @@ public class CommentActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<Comment>>() {
             @Override
             public void onResponse(@NonNull Call<List<Comment>> call, @NonNull Response<List<Comment>> response) {
-                initRecyclerView();
                 setCommentList(response.body());
             }
 
@@ -57,14 +58,6 @@ public class CommentActivity extends AppCompatActivity {
                 Toast.makeText(CommentActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
             }
         });
-    }
-
-    /**
-     * Called before the operation is destroyed
-     */
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 
     /**
