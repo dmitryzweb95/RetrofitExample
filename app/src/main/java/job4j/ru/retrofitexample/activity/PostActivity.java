@@ -81,11 +81,6 @@ public class PostActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
-
     /**
      * Create post
      */
@@ -190,6 +185,7 @@ public class PostActivity extends AppCompatActivity {
      * Delete post
      */
     private void delete() {
+        int finalId = 0;
         //Converting ID
         String idValue = id.getText().toString();
         if (idValue.isEmpty()) {
@@ -197,27 +193,26 @@ public class PostActivity extends AppCompatActivity {
             return;
         }
         try {
-            int finalId = Integer.parseInt(idValue);
-
-            GetPostDataService postDataService = getRetrofitSettings().create(GetPostDataService.class);
-
-            Call<Void> call = postDataService.deletePost(finalId);
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
-                    if (response.isSuccessful()) {
-                        result.setText(String.valueOf(response.code()));
-                    }
-                }
-
-                @Override
-                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
-                    t.getMessage();
-                }
-            });
+            finalId = Integer.parseInt(idValue);
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
+        GetPostDataService postDataService = getRetrofitSettings().create(GetPostDataService.class);
+
+        Call<Void> call = postDataService.deletePost(finalId);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                if (response.isSuccessful()) {
+                    result.setText(String.valueOf(response.code()));
+                }
+            }
+
+            @Override
+            public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                t.getMessage();
+            }
+        });
     }
 
 
