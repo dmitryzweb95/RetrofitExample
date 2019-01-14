@@ -1,6 +1,7 @@
 package job4j.ru.retrofitexample.activity;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -30,16 +31,6 @@ public class CommentActivity extends AppCompatActivity {
     private CommentAdapter adapter;
     private RecyclerView recyclerView;
 
-    /**
-     * Called before the operation is destroyed
-     */
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        adapter = null;
-        recyclerView = null;
-    }
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,15 +47,24 @@ public class CommentActivity extends AppCompatActivity {
 
         call.enqueue(new Callback<List<Comment>>() {
             @Override
-            public void onResponse(Call<List<Comment>> call, Response<List<Comment>> response) {
-                generateCommentList(response.body());
+            public void onResponse(@NonNull Call<List<Comment>> call, @NonNull Response<List<Comment>> response) {
+                initRecyclerView();
+                setCommentList(response.body());
             }
 
             @Override
-            public void onFailure(Call<List<Comment>> call, Throwable t) {
+            public void onFailure(@NonNull Call<List<Comment>> call, @NonNull Throwable t) {
                 Toast.makeText(CommentActivity.this, "Something went wrong...Please try later!", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    /**
+     * Called before the operation is destroyed
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     /**
@@ -82,8 +82,7 @@ public class CommentActivity extends AppCompatActivity {
      *
      * @param comDataList list of comments
      */
-    private void generateCommentList(List<Comment> comDataList) {
-        initRecyclerView();
+    private void setCommentList(List<Comment> comDataList) {
         adapter.setItems(comDataList);
     }
 }

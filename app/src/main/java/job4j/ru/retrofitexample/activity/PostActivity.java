@@ -1,6 +1,7 @@
 package job4j.ru.retrofitexample.activity;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -45,19 +46,6 @@ public class PostActivity extends AppCompatActivity {
     private TextView result;
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        create = null;
-        edit = null;
-        delete = null;
-        id = null;
-        userId = null;
-        title = null;
-        text = null;
-        result = null;
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.post_activity);
@@ -93,6 +81,11 @@ public class PostActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     /**
      * Create post
      */
@@ -113,7 +106,7 @@ public class PostActivity extends AppCompatActivity {
         Call<Post> call = postDataService.createPost(finalUserIdValue, title.getText().toString(), text.getText().toString());
         call.enqueue(new Callback<Post>() {
             @Override
-            public void onResponse(Call<Post> call, Response<Post> response) {
+            public void onResponse(@NonNull Call<Post> call, @NonNull Response<Post> response) {
                 if (response.isSuccessful()) {
                     Post postResponse = response.body();
                     String content = String.format(
@@ -165,7 +158,7 @@ public class PostActivity extends AppCompatActivity {
         Call<Post> call = postDataService.patchPost(finalId, new Post(finalUserIdValue, title.getText().toString(), text.getText().toString()));
         call.enqueue(new Callback<Post>() {
             @Override
-            public void onResponse(Call<Post> call, Response<Post> response) {
+            public void onResponse(@NonNull Call<Post> call, @NonNull Response<Post> response) {
                 if (response.isSuccessful()) {
                     Post postResponse = response.body();
                     String content = String.format(
@@ -199,34 +192,32 @@ public class PostActivity extends AppCompatActivity {
     private void delete() {
         //Converting ID
         String idValue = id.getText().toString();
+        if (idValue.isEmpty()) {
+            Toast.makeText(this, "Not enough data", Toast.LENGTH_SHORT).show();
+            return;
+        }
         try {
-            if (idValue.isEmpty()) {
-                Toast.makeText(this, "Not enough data", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            int finalId = Integer.parseInt(idValue);
+
+            GetPostDataService postDataService = getRetrofitSettings().create(GetPostDataService.class);
+
+            Call<Void> call = postDataService.deletePost(finalId);
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(@NonNull Call<Void> call, @NonNull Response<Void> response) {
+                    if (response.isSuccessful()) {
+                        result.setText(String.valueOf(response.code()));
+                    }
+                }
+
+                @Override
+                public void onFailure(@NonNull Call<Void> call, @NonNull Throwable t) {
+                    t.getMessage();
+                }
+            });
         } catch (NumberFormatException e) {
             e.printStackTrace();
         }
-        int finalId = Integer.parseInt(idValue);
-                    /*
-        Realization of interface JsonPlaceHolderApi
-         */
-        GetPostDataService postDataService = getRetrofitSettings().create(GetPostDataService.class);
-
-        Call<Void> call = postDataService.deletePost(finalId);
-        call.enqueue(new Callback<Void>() {
-            @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
-                if (response.isSuccessful()) {
-                    result.setText(String.valueOf(response.code()));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Void> call, Throwable t) {
-                t.getMessage();
-            }
-        });
     }
 
 
